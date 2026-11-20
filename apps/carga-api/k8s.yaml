@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: carga-api
-          image: carga-api:1.0
+          image: carga-api:1.1
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
@@ -57,3 +57,16 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: carga-api
+spec:
+  selector:
+    matchLabels:
+      app: carga-api
+  endpoints:
+    - port: http
+      path: /prometheus
+      interval: 15s          
