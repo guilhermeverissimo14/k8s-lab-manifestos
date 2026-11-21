@@ -11,19 +11,31 @@ spec:
     spec:
       containers:
         - name: carga-api
-          image: carga-api:1.1
+          image: carga-api:1.2
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
+          env:
+            - name: NEW_RELIC_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic
+                  key: license
+            - name: NEW_RELIC_APP_NAME
+              value: carga-api
+            - name: NEW_RELIC_LOG_FILE_NAME
+              value: STDOUT
+            - name: NEW_RELIC_APPLICATION_LOGGING_FORWARDING_ENABLED
+              value: "false"
           resources:
-            requests: { cpu: 250m, memory: 256Mi }
-            limits:   { cpu: 500m, memory: 384Mi }
+            requests: { cpu: 250m, memory: 384Mi }
+            limits:   { cpu: 500m, memory: 640Mi }
           readinessProbe:
             httpGet: { path: /health/readiness, port: 8080 }
             periodSeconds: 2
           livenessProbe:
             httpGet: { path: /health/liveness, port: 8080 }
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
 ---
 apiVersion: v1
 kind: Service
